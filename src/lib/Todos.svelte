@@ -1,12 +1,18 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri"
 
-  let todos: { id: number; title: string; completed: boolean; }[] = [];
+  interface Todo {
+    id: number;
+    title: string;
+    completed: boolean;
+  }
+
+  let todos: Todo[] = [];
   let title = "";
 
   async function addTodo(){
     if(title){
-      let todo: { id: number; title: string; completed: boolean; } = await invoke("generate_todo", { title });
+      let todo: Todo = await invoke("generate_todo", { title });
       todos.push(todo);
       todos = todos;
       title = "";
