@@ -1,31 +1,58 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri"
-  import Todo from "./Todo.svelte";
 
-  let todos: {lp: number, task: string, done: boolean}[] = [
-    { lp: 1, task: "Learn Tauri", done: false },
-    { lp: 2, task: "Learn Svelte", done: false },
-    { lp: 3, task: "Learn Rust", done: false },
-  ];
+  let todos: { id: number; title: string; completed: boolean; }[] = [];
+  let title = "";
 
-  let task = "";
+  async function addTodo(){
+    if(title){
+      let todo: { id: number; title: string; completed: boolean; } = await invoke("generate_todo", { title });
+      todos.push(todo);
+      todos = todos;
+      title = "";
+    }
+  }
 
-  function addTodo(){
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    let todo = { lp: todos.length + 1, task, done: false };
-    todos.push(todo);
-    todos = todos;
+  function removeTodo(){
+    todos = todos.filter(todo => !todo.completed);
   }
 </script>
 
 <div>
   <form class="row" on:submit|preventDefault={addTodo}>
-    <input id="greet-input" placeholder="What you have to do..." bind:value={task} />
+    <input id="greet-input" placeholder="What you have to do..." bind:value={title} />
     <button type="submit">Add</button>
-    <button type="button" on:click={() => console.log(todos)}>?</button>
+    <button type="button" on:click={removeTodo}>Remove done</button>
   </form>
 
-  {#each todos as todo (todo.lp)}
-    <Todo {...todo} />
+  {#each todos as todo (todo.id)}
+    <div class="todo">
+      <span>{todo.id}</span>
+      <p>{todo.title}</p>
+      <input type="checkbox"
+      id="todo-{todo.id}"checked={todo.completed}
+      on:click={() => todo.completed = !todo.completed}/>
+    </div>
+  {:else}
+    <p>No todos</p>
   {/each}
 </div>
+
+<style>
+  .todo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-bottom: 1px solid #ccc;
+    }
+
+  input[type="checkbox"] {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  input[type="checkbox"]:checked {
+    background-color: #000;
+  }
+</style>
