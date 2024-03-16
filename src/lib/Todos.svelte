@@ -22,14 +22,25 @@
   function removeTodo(){
     todos = todos.filter(todo => !todo.completed);
   }
+
+  $: doneTodos = todos.filter(todo => todo.completed).length;
+  $: totalTodos = todos.length;
 </script>
 
 <div>
   <form class="row" on:submit|preventDefault={addTodo}>
-    <input id="greet-input" placeholder="What you have to do..." bind:value={title} />
+    <input id="todo-input" placeholder="What you have to do..." bind:value={title} />
     <button type="submit">Add</button>
     <button type="button" on:click={removeTodo}>Remove done</button>
   </form>
+
+  <p id="todos-counter">{doneTodos} / {totalTodos}</p>
+
+  <div class="todo">
+    <span>ID</span>
+    <p>Title</p>
+    <span>Done</span>
+  </div>
 
   {#each todos as todo (todo.id)}
     <div class="todo">
@@ -45,13 +56,22 @@
 </div>
 
 <style>
+  #todos-counter {
+    margin: 1rem 0;
+    text-align: right;
+  }
+
   .todo {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem;
-      border-bottom: 1px solid #ccc;
-    }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .todo p {
+    margin: 0;
+  }
 
   input[type="checkbox"] {
     width: 1.5rem;

@@ -5,7 +5,6 @@
 <main class="container">
   <h1>ToDo App</h1>
 
-
   <Todos />
 
 </main>
